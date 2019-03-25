@@ -1,39 +1,8 @@
 from discord.ext import commands
+from config import wolfram_token
 
-import asyncio
-import ast
-import operator
-
-_OP_MAP = {
-    ast.Add: operator.add,
-    ast.Sub: operator.sub,
-    ast.Mult: operator.mul,
-    ast.Div: operator.truediv,
-    ast.Invert: operator.neg,
-    ast.Pow: operator.pow,
-    ast.Mod: operator.mod,
-    ast.FloorDiv: operator.floordiv,
-}
-
-
-class Calc(ast.NodeVisitor):
-
-    def visit_BinOp(self, node):
-        left = self.visit(node.left)
-        right = self.visit(node.right)
-        return _OP_MAP[type(node.op)](left, right)
-
-    def visit_Num(self, node):
-        return node.n
-
-    def visit_Expr(self, node):
-        return self.visit(node.value)
-
-    @classmethod
-    def evaluate(cls, expression):
-        tree = ast.parse(expression)
-        calc = cls()
-        return calc.visit(tree.body[0])
+import aiohttp
+import urllib
 
 
 class Calculate(commands.Cog):
@@ -42,7 +11,16 @@ class Calculate(commands.Cog):
 
     @commands.command()
     async def math(self, ctx, expression):
-            await ctx.send(Calc.evaluate(expression))
+        """Query Wolfram API.
+
+        Query must be in quotes.
+        """
+        url = ('https://api.wolframalpha.com/v1/result?{}%3f'
+               '&appid={}'.format(urllib.parse.urlencode({'i': ' '.join(expression)}), wolfram_token))
+        async with aiohttp.ClientSession() as session:
+            response = await session.get(url)
+            content = await response.read()
+        await ctx.send(content)
 
 
 def setup(bot):
