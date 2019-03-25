@@ -4,9 +4,15 @@ import config
 
 description = '''Hello! I am a bot written by soup to provide discord server management and various utilities.'''
 
+initial_extensions = (
+    'cogs.mod',
+    'cogs.calculate',
+)
+
 bot = commands.Bot(command_prefix='!', description=description)
 
-bot.load_extension("cogs.mod")
+for extension in initial_extensions:
+    bot.load_extension(extension)
 
 @bot.event
 async def on_ready():

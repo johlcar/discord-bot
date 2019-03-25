@@ -104,7 +104,7 @@ class Mod(commands.Cog):
         await member.unban(reason=reason)
         await ctx.send(f':ok_hand:{member.name} has been unbanned.')
 
-    # TODO Implement temporary ban (will require reminder counter).
+    # TODO Implement temporary ban (will require reminder timer).
 
 
 def setup(bot):
