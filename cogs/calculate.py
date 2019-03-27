@@ -10,17 +10,29 @@ class Calculate(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def math(self, ctx, expression):
-        """Query Wolfram API.
+    @commands.cooldown(1, 30, commands.BucketType.user)
+    async def calc(self, ctx, query):
+        """Query Wolfram short answer API.
 
-        Query must be in quotes.
+        Query must be in quotes. 1 request per 30 seconds.
         """
-        url = ('https://api.wolframalpha.com/v1/result?{}%3f'
-               '&appid={}'.format(urllib.parse.urlencode({'i': ' '.join(expression)}), wolfram_token))
+        encoded_query = urllib.parse.urlencode({f'i': f'{query}'})
+
+        url = f'https://api.wolframalpha.com/v1/result?{encoded_query}' \
+            f'&appid={wolfram_token}'
+        print(url)
         async with aiohttp.ClientSession() as session:
             response = await session.get(url)
-            content = await response.read()
+            content = await response.text()
         await ctx.send(content)
+
+    @calc.error
+    async def calc_error(self, ctx, error):
+        if isinstance(error, commands.CommandOnCooldown):
+            if ctx.message.author.guild_permissions.manage_roles:
+                await ctx.reinvoke()
+                return
+            await ctx.send(error)
 
 
 def setup(bot):

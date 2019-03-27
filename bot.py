@@ -2,7 +2,7 @@ from discord.ext import commands
 
 import config
 
-description = '''Hello! I am a bot written by soup to provide discord server management and various utilities.'''
+description = '''Hello! I am a bot written by soup to provide various utilities.'''
 
 initial_extensions = (
     'cogs.mod',
@@ -20,5 +20,6 @@ async def on_ready():
     print(bot.user.name)
     print(bot.user.id)
     print('------')
+
 
 bot.run(config.discord_token)
