@@ -6,7 +6,7 @@ description = '''Hello! I am a bot written by soup to provide various utilities.
 
 initial_extensions = (
     'cogs.mod',
-    'cogs.calculate',
+    'cogs.wolfram',
 )
 
 bot = commands.Bot(command_prefix='!', description=description)
